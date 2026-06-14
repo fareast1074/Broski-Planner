@@ -1,77 +1,646 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Broski Calendar</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broski Calendar | Aesthetic Planner</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f5efe6 0%, #e8dcdb 100%);
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --border-glow: rgba(255, 255, 255, 0.4);
+            --accent-soft: #d4a5a5;
+            --accent-dark: #b87373;
+            --text-main: #4a3f3f;
+            --text-muted: #8c7b7b;
+            --shadow: 0 8px 32px 0 rgba(184, 115, 115, 0.1);
+        }
 
-<link rel="stylesheet" href="style.css">
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 15px;
+        }
+
+        /* Mobile Container Layout */
+        .phone-wrapper {
+            width: 100%;
+            max-width: 410px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glow);
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 60px; /* Space for chatbot button */
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: var(--accent-dark);
+            margin-bottom: 12px;
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Calendar Styling */
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0 10px 0;
+            padding: 0 5px;
+        }
+
+        .calendar-controls h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .cal-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--accent-dark);
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .day:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .day.empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        .day.selected {
+            background: var(--accent-soft);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(212, 165, 165, 0.4);
+        }
+
+        .day.today {
+            border: 1.5px solid var(--accent-dark);
+        }
+
+        .dot {
+            width: 5px;
+            height: 5px;
+            background-color: var(--accent-dark);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 4px;
+        }
+        .day.selected .dot {
+            background-color: white;
+        }
+
+        /* Agenda / Input Styles */
+        .agenda-section {
+            margin-top: 20px;
+        }
+
+        .agenda-section h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 14px;
+            border: 1px solid rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.7);
+            outline: none;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            transition: border 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border: 1px solid var(--accent-soft);
+        }
+
+        .btn-add {
+            background: var(--accent-soft);
+            color: white;
+            border: none;
+            padding: 0 18px;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-add:hover {
+            background: var(--accent-dark);
+        }
+
+        .event-list {
+            list-style: none;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 2px 6px;
+        }
+
+        .btn-delete:hover {
+            color: #d9534f;
+        }
+
+        .no-events {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 15px 0;
+            font-style: italic;
+        }
+
+        /* Floating Chatbot Widget */
+        #chat-widget-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: var(--accent-dark);
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(184, 115, 115, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.2s;
+        }
+
+        #chat-widget-toggle:active {
+            transform: scale(0.9);
+        }
+
+        #chat-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: calc(100% - 40px);
+            max-width: 350px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+            animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .chat-header {
+            background: var(--accent-soft);
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .msg {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .msg.bot {
+            background: #f0ebe6;
+            color: var(--text-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg.user {
+            background: var(--accent-soft);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-input-area {
+            padding: 10px;
+            display: flex;
+            gap: 6px;
+            background: rgba(255,255,255,0.6);
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.05);
+            outline: none;
+            font-size: 0.85rem;
+        }
+
+        .chat-send-btn {
+            background: var(--accent-soft);
+            border: none;
+            color: white;
+            padding: 0 14px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="app">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-
-    <h1>📅 Broski</h1>
-
-    <button id="addBtn">+ Add Event</button>
-
-    <div class="legend">
-      <div><span class="dot blue"></span> Work</div>
-      <div><span class="dot green"></span> Personal</div>
-      <div><span class="dot red"></span> Important</div>
+<div class="phone-wrapper">
+    <div class="header">
+        <h1>broski calendar</h1>
+        <img class="hero-img" src="https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&w=500&q=80" alt="Minimalist flower aesthetic">
     </div>
 
-  </aside>
-
-  <!-- MAIN -->
-  <main>
-
-    <header class="topbar">
-
-      <button id="prev">◀</button>
-      <h2 id="monthTitle"></h2>
-      <button id="next">▶</button>
-
-    </header>
+    <div class="calendar-controls">
+        <button class="cal-btn" onclick="changeMonth(-1)">‹</button>
+        <h2 id="month-year-label">Month Year</h2>
+        <button class="cal-btn" onclick="changeMonth(1)">›</button>
+    </div>
 
     <div class="weekdays">
-      <div>Sun</div><div>Mon</div><div>Tue</div>
-      <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
     </div>
+    <div class="days-grid" id="calendar-days"></div>
 
-    <div id="calendar" class="calendar"></div>
-
-  </main>
-
+    <div class="agenda-section">
+        <h3 id="selected-date-label">Events</h3>
+        <div class="input-group">
+            <input type="text" id="newEventInput" placeholder="Add custom event details...">
+            <button class="btn-add" onclick="addNewEvent()">Add</button>
+        </div>
+        <ul class="event-list" id="eventList"></ul>
+    </div>
 </div>
 
-<!-- MODAL -->
-<div id="modal" class="modal">
-  <div class="modal-box">
-
-    <h3>Add Event</h3>
-
-    <input id="title" placeholder="Event title" />
-    <input id="time" type="time"/>
-
-    <select id="color">
-      <option value="#3b82f6">Blue</option>
-      <option value="#22c55e">Green</option>
-      <option value="#ef4444">Red</option>
-    </select>
-
-    <button id="save">Save</button>
-
-  </div>
+<div id="chat-widget-toggle" onclick="toggleChat()">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
 </div>
 
-<script type="module" src="app.js"></script>
+<div id="chat-container">
+    <div class="chat-header">
+        <span>BroskiBot</span>
+        <span style="cursor:pointer; font-size:1.2rem;" onclick="toggleChat()">×</span>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="msg bot">Yo! I'm your Broski Planner assistant. Want to check your schedule or log a fast event? (e.g., Try typing "add Gym")</div>
+    </div>
+    <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="handleChatKey(event)">
+        <button class="chat-send-btn" onclick="sendChatMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    // State Variables
+    let currentDate = new Date();
+    let selectedDate = new Date();
+    // Structured data: { "YYYY-MM-DD": ["Event 1", "Event 2"] }
+    let calendarEvents = JSON.parse(localStorage.getItem('broskiCalendarData')) || {};
+    
+    // Chat Bot Conversation State Machine
+    let botState = { step: 'idle', contextData: {} };
+
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    // App Initialization
+    window.onload = function() {
+        renderCalendar();
+        updateAgendaView();
+    };
+
+    function renderCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        document.getElementById('month-year-label').innerText = `${monthNames[month]} ${year}`;
+
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const totalDays = new Date(year, month + 1, 0).getDate();
+        
+        const daysContainer = document.getElementById('calendar-days');
+        daysContainer.innerHTML = '';
+
+        // Generate padding spaces for calendar alignment
+        for (let i = 0; i < firstDayIndex; i++) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'day empty';
+            daysContainer.appendChild(emptyDiv);
+        }
+
+        // Generate proper month calendar days
+        const today = new Date();
+        for (let day = 1; day <= totalDays; day++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'day';
+            dayDiv.innerText = day;
+
+            const dateString = formatDateString(year, month, day);
+
+            // Highlight modifiers
+            if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                dayDiv.classList.add('today');
+            }
+            if (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear()) {
+                dayDiv.classList.add('selected');
+            }
+            if (calendarEvents[dateString] && calendarEvents[dateString].length > 0) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dayDiv.appendChild(dot);
+            }
+
+            dayDiv.onclick = () => selectDay(day);
+            daysContainer.appendChild(dayDiv);
+        }
+    }
+
+    function changeMonth(direction) {
+        currentDate.setMonth(currentDate.getMonth() + direction);
+        renderCalendar();
+    }
+
+    function selectDay(day) {
+        selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+        renderCalendar();
+        updateAgendaView();
+    }
+
+    function formatDateString(year, month, day) {
+        return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    }
+
+    function updateAgendaView() {
+        const dateString = formatDateString(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+        document.getElementById('selected-date-label').innerText = `${monthNames[selectedDate.getMonth()]} ${selectedDate.getDate()} Schedule`;
+        
+        const listContainer = document.getElementById('eventList');
+        listContainer.innerHTML = '';
+
+        const events = calendarEvents[dateString] || [];
+        if (events.length === 0) {
+            listContainer.innerHTML = '<li class="no-events">No events planned for today.</li>';
+            return;
+        }
+
+        events.forEach((eventText, idx) => {
+            const li = document.createElement('li');
+            li.className = 'event-item';
+            li.innerHTML = `
+                <span>${eventText}</span>
+                <button class="btn-delete" onclick="deleteEvent(${idx})">×</button>
+            `;
+            listContainer.appendChild(li);
+        });
+    }
+
+    function addNewEvent() {
+        const input = document.getElementById('newEventInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const dateString = formatDateString(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+        
+        if (!calendarEvents[dateString]) {
+            calendarEvents[dateString] = [];
+        }
+        
+        calendarEvents[dateString].push(text);
+        saveAndSync();
+        input.value = '';
+    }
+
+    function deleteEvent(index) {
+        const dateString = formatDateString(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+        if (calendarEvents[dateString]) {
+            calendarEvents[dateString].splice(index, 1);
+            if (calendarEvents[dateString].length === 0) {
+                delete calendarEvents[dateString];
+            }
+            saveAndSync();
+        }
+    }
+
+    function saveAndSync() {
+        localStorage.setItem('broskiCalendarData', JSON.stringify(calendarEvents));
+        renderCalendar();
+        updateAgendaView();
+    }
+
+    /* Interactive Chatbot Implementation */
+    function toggleChat() {
+        const container = document.getElementById('chat-container');
+        container.style.display = (container.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    function handleChatKey(e) {
+        if (e.key === 'Enter') sendChatMessage();
+    }
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const userText = input.value.trim();
+        if (!userText) return;
+
+        appendMessage(userText, 'user');
+        input.value = '';
+
+        setTimeout(() => {
+            processBotLogic(userText);
+        }, 600);
+    }
+
+    function appendMessage(text, sender) {
+        const msgContainer = document.getElementById('chatMessages');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `msg ${sender}`;
+        msgDiv.innerText = text;
+        msgContainer.appendChild(msgDiv);
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    }
+
+    function processBotLogic(text) {
+        const cleanText = text.toLowerCase();
+        
+        // Context-aware state tracking
+        if (botState.step === 'awaiting_title') {
+            botState.contextData.title = text;
+            botState.step = 'awaiting_date';
+            appendMessage(`Sweet. What day of this month (${monthNames[currentDate.getMonth()]}) should I place "${text}" on? Give me a number!`, 'bot');
+            return;
+        }
+
+        if (botState.step === 'awaiting_date') {
+            const dayNum = parseInt(text);
+            const totalDays = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+            
+            if (isNaN(dayNum) || dayNum < 1 || dayNum > totalDays) {
+                appendMessage(`Standard check fail. Please give me a valid day number between 1 and ${totalDays}.`, 'bot');
+                return;
+            }
+
+            const targetDateStr = formatDateString(currentDate.getFullYear(), currentDate.getMonth(), dayNum);
+            if (!calendarEvents[targetDateStr]) {
+                calendarEvents[targetDateStr] = [];
+            }
+            calendarEvents[targetDateStr].push(botState.contextData.title);
+            saveAndSync();
+
+            appendMessage(`Done deal! Added "${botState.contextData.title}" to ${monthNames[currentDate.getMonth()]} ${dayNum}. Check your calendar view!`, 'bot');
+            botState = { step: 'idle', contextData: {} };
+            return;
+        }
+
+        // Direct Text Command Parsing
+        if (cleanText.includes('add') || cleanText.includes('schedule') || cleanText.includes('remind')) {
+            const matched = text.match(/(?:add|schedule|remind)\s+(.*)/i);
+            if (matched && matched[1]) {
+                botState.step = 'awaiting_date';
+                botState.contextData.title = matched[1];
+                appendMessage(`Got it! Adding "${matched[1]}". Which day number of this month should it go to?`, 'bot');
+            } else {
+                botState.step = 'awaiting_title';
+                appendMessage("What event name should I write down?", 'bot');
+            }
+            return;
+        }
+
+        if (cleanText.includes('clear')) {
+            calendarEvents = {};
+            saveAndSync();
+            appendMessage("Wiped the slate clean! All calendar events have been dropped.", 'bot');
+            return;
+        }
+
+        if (cleanText.includes('hi') || cleanText.includes('hello') || cleanText.includes('yo')) {
+            appendMessage("Yo! Tell me to 'add [event name]' to start organizing your schedule right here.", 'bot');
+            return;
+        }
+
+        // Safe Fallback
+        appendMessage("I didn't quite catch that. You can say things like 'add Movie Night', 'clear' to reset, or tap your calendar cells!", 'bot');
+    }
+</script>
 
 </body>
 </html>
