@@ -1,152 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Broski Planner</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Broski Calendar</title>
 
 <link rel="stylesheet" href="style.css">
-<script type="module" src="app.js"></script>
 
-<link
-href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
 <div class="app">
 
-    <aside class="sidebar">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
 
-        <div class="logo">
-            📅 Broski Planner
-        </div>
+    <h1>📅 Broski</h1>
 
-        <button id="newEventBtn">
-            + New Event
-        </button>
+    <button id="addBtn">+ Add Event</button>
 
-        <nav>
+    <div class="legend">
+      <div><span class="dot blue"></span> Work</div>
+      <div><span class="dot green"></span> Personal</div>
+      <div><span class="dot red"></span> Important</div>
+    </div>
 
-            <div class="nav-item active">
-                📆 Calendar
-            </div>
+  </aside>
 
-            <div class="nav-item">
-                👥 Team
-            </div>
+  <!-- MAIN -->
+  <main>
 
-            <div class="nav-item">
-                📋 Tasks
-            </div>
+    <header class="topbar">
 
-            <div class="nav-item">
-                ⚙ Settings
-            </div>
+      <button id="prev">◀</button>
+      <h2 id="monthTitle"></h2>
+      <button id="next">▶</button>
 
-        </nav>
+    </header>
 
-        <div class="sidebar-bottom">
+    <div class="weekdays">
+      <div>Sun</div><div>Mon</div><div>Tue</div>
+      <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+    </div>
 
-            <button id="darkToggle">
-                🌙 Dark Mode
-            </button>
+    <div id="calendar" class="calendar"></div>
 
-            <button id="loginBtn">
-                Login with Google
-            </button>
-
-            <div id="userInfo"></div>
-
-        </div>
-
-    </aside>
-
-    <main>
-
-        <header class="topbar">
-
-            <button id="prevMonth">
-                ◀
-            </button>
-
-            <h1 id="monthTitle"></h1>
-
-            <button id="nextMonth">
-                ▶
-            </button>
-
-        </header>
-
-        <section class="calendar-wrapper">
-
-            <div class="weekdays">
-
-                <div>Sun</div>
-                <div>Mon</div>
-                <div>Tue</div>
-                <div>Wed</div>
-                <div>Thu</div>
-                <div>Fri</div>
-                <div>Sat</div>
-
-            </div>
-
-            <div
-                id="calendar"
-                class="calendar">
-            </div>
-
-        </section>
-
-    </main>
+  </main>
 
 </div>
 
-<div id="eventModal" class="modal">
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-box">
 
-    <div class="modal-content">
+    <h3>Add Event</h3>
 
-        <h2>Create Event</h2>
+    <input id="title" placeholder="Event title" />
+    <input id="time" type="time"/>
 
-        <input
-            id="eventTitle"
-            placeholder="Event title">
+    <select id="color">
+      <option value="#3b82f6">Blue</option>
+      <option value="#22c55e">Green</option>
+      <option value="#ef4444">Red</option>
+    </select>
 
-        <input
-            id="eventTime"
-            type="time">
+    <button id="save">Save</button>
 
-        <select id="eventColor">
-
-            <option value="#6366f1">
-                Purple
-            </option>
-
-            <option value="#10b981">
-                Green
-            </option>
-
-            <option value="#ef4444">
-                Red
-            </option>
-
-            <option value="#f59e0b">
-                Orange
-            </option>
-
-        </select>
-
-        <button id="saveEvent">
-            Save Event
-        </button>
-
-    </div>
-
+  </div>
 </div>
 
 <script type="module" src="app.js"></script>
