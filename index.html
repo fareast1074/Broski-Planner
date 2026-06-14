@@ -386,12 +386,13 @@ body.dark-mode .day.holiday {
                 </div>
 
                 <div class="form-row-three">
-                    <input type="time" id="newEventTime">
+                    <input type="time" id="newEventTime" class="hidden">
                     <select id="newEventCategory">
-                        <option value="personal">🌸 Personal</option>
-                        <option value="social">☕ Social</option>
-                        <option value="work">💼 Work</option>
-                        <option value="fitness">💪 Fitness</option>
+                <option value="personal">🏠 Personal</option>
+<option value="work">💼 Work</option>
+<option value="camping">🏕️ Camping</option>
+<option value="hiking">🥾 Hiking</option>
+<option value="fitness">🏃 Run</option>
                     </select>
                     <div class="action-flex-wrapper">
                         <button class="btn-add" id="submitActionBtn" onclick="handleFormSubmission()">Add</button>
@@ -404,7 +405,7 @@ body.dark-mode .day.holiday {
         </div>
 
         <div class="interactive-section-header" id="incomingHeaderNode" onclick="toggleCollapseSection('incomingHeaderNode', 'incomingContentWrapper')">
-            <h3>Incoming Board (Upcoming Plans)</h3>
+            <h3>Incoming Plan Broski </h3>
             <span class="collapse-chevron-indicator">▼</span>
         </div>
         
@@ -443,7 +444,7 @@ body.dark-mode .day.holiday {
     
     <div class="chat-chips-scroll-row">
         <button class="suggest-chip-btn" onclick="triggerChipCommand('today')">📊 Today's Briefing</button>
-        <button class="suggest-chip-btn" onclick="triggerChipCommand('add Gym on 20 June at 6pm')">💪 Add Gym Template</button>
+        <button class="suggest-chip-btn" onclick="triggerChipCommand('add Run on 20 June at 6pm')">💪 Add Gym Template</button>
         <button class="suggest-chip-btn" onclick="triggerChipCommand('help')">❓ Help Directory</button>
     </div>
 
@@ -1170,9 +1171,17 @@ let fetchedHolidays = {};
                 responseWarningHTML = `<br>⚠️ <b>Warning:</b> Detected a time conflict on ${startDayNum} ${monthNames[startMonth]} at ${time}! Entry was still added.`;
             }
 
-            let parsedCategory = 'social';
-            if (cleanText.includes('gym') || cleanText.includes('workout') || cleanText.includes('sukan') || cleanText.includes('senaman')) parsedCategory = 'fitness';
-            if (cleanText.includes('work') || cleanText.includes('meeting') || cleanText.includes('kerja') || cleanText.includes('mesyuarat')) parsedCategory = 'work';
+           let parsedCategory = 'social'; // default
+
+if (cleanText.includes('gym') || cleanText.includes('run') || cleanText.includes('workout')) {
+    parsedCategory = 'fitness';
+} else if (cleanText.includes('work') || cleanText.includes('meeting')) {
+    parsedCategory = 'work';
+} else if (cleanText.includes('camp') || cleanText.includes('camping')) {
+    parsedCategory = 'camping';
+} else if (cleanText.includes('hike') || cleanText.includes('hiking')) {
+    parsedCategory = 'hiking';
+}
 
             const payload = { title, participant, startDate: startDateStr, endDate: endDateStr, time, category: parsedCategory, owner: currentUser };
 
